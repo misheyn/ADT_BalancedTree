@@ -74,9 +74,9 @@ private:
 
     void destructor(Node<T> *node);
 
-    T search(Node<T> *node, T k);
+    T search(Node<T> *node, T k, T *val);
 
-    bool write(Node<T> *node, T k, T d);
+    bool write(Node<T> *node, T k, T d, bool *f);
 };
 
 

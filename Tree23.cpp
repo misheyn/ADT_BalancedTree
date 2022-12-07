@@ -382,42 +382,46 @@ bool Tree23<T>::doRemove1(Node<T> **node, T k, Node<T> **tlow1, bool *one) {
 template<typename T>
 T Tree23<T>::getValue(T k) {
     stat = 0;
-    return search(root, k);
+    T val = -1;
+    search(root, k, &val);
+    return val;
 }
 
 template<typename T>
-T Tree23<T>::search(Node<T> *node, T k) {
+T Tree23<T>::search(Node<T> *node, T k, T *val) {
     if (node == nullptr) return -1;
     stat++;
     if (isLeaf(node)) {
-        if (node->key == k) return node->data;
+        if (node->key == k) *val = node->data;
     } else {
-        if (k < node->low2) search(node->son1, k);
-        else if (k > node->low2 && k < node->low3) search(node->son2, k);
-        else search(node->son3, k);
+        if (k < node->low2) search(node->son1, k, val);
+        else if (node->low3 != -1 && k >= node->low3) search(node->son3, k, val);
+        else search(node->son2, k, val);
     }
-    return -1;
+    return *val;
 }
 
 template<typename T>
 bool Tree23<T>::changeValue(T k, T d) {
-    return write(root, k, d);
+    bool f = false;
+    write(root, k, d, &f);
+    return f;
 }
 
 template<typename T>
-bool Tree23<T>::write(Node<T> *node, T k, T d) {
+bool Tree23<T>::write(Node<T> *node, T k, T d, bool *f) {
     if (node == nullptr) return false;
     if (isLeaf(node)) {
         if (node->key == k) {
             node->data = d;
-            return true;
+            *f = true;
         }
     } else {
-        search(node->son1, k);
-        search(node->son2, k);
-        search(node->son3, k);
+        if (k < node->low2) write(node->son1, k, d, f);
+        else if (node->low3 != -1 && k >= node->low3) write(node->son3, k, d, f);
+        else write(node->son2, k, d, f);
     }
-    return false;
+    return *f;
 }
 
 template<typename T>
